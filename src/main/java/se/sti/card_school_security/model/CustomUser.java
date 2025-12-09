@@ -9,7 +9,9 @@ import java.util.UUID;
 @Table("user")
 public class CustomUser {
     @Id
-    private UUID id;
+    private UUID id = UUID.randomUUID();
+
+    private int score;
 
     private String username;
     private String email;
@@ -25,16 +27,18 @@ public class CustomUser {
     public CustomUser() {
     }
 
-    public CustomUser(Set<UserRole> roles, boolean isEnabled, boolean isCredentialsNonExpired, boolean isAccountNonLocked, boolean isAccountNonExistent, String password, String email, String username, UUID id) {
-        this.roles = roles;
-        this.isEnabled = isEnabled;
-        this.isCredentialsNonExpired = isCredentialsNonExpired;
-        this.isAccountNonLocked = isAccountNonLocked;
-        this.isAccountNonExistent = isAccountNonExistent;
-        this.password = password;
-        this.email = email;
-        this.username = username;
+
+    public CustomUser(UUID id, int score, String username, String email, String password, boolean isAccountNonExistent, boolean isAccountNonLocked, boolean isCredentialsNonExpired, boolean isEnabled, Set<UserRole> roles) {
         this.id = id;
+        this.score = score;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.isAccountNonExistent = isAccountNonExistent;
+        this.isAccountNonLocked = isAccountNonLocked;
+        this.isCredentialsNonExpired = isCredentialsNonExpired;
+        this.isEnabled = isEnabled;
+        this.roles = roles;
     }
 
     public String getUsername() {
@@ -95,6 +99,14 @@ public class CustomUser {
 
     public void setCredentialsNonExpired(boolean credentialsNonExpired) {
         isCredentialsNonExpired = credentialsNonExpired;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
     }
 
     public void setEnabled(boolean enabled) {
