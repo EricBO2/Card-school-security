@@ -24,6 +24,7 @@ public class CustomUserDetails implements UserDetails {
         return Collections.unmodifiableSet(authorities);
     }
 
+
     @Override
     public @Nullable String getPassword() {
         return customUserDTO.getPassword();
