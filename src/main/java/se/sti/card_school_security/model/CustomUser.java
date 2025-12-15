@@ -28,8 +28,7 @@ public class CustomUser {
     }
 
 
-    public CustomUser(UUID id, int score, String username, String email, String password, boolean isAccountNonExistent, boolean isAccountNonLocked, boolean isCredentialsNonExpired, boolean isEnabled, Set<UserRole> roles) {
-        this.id = id;
+    public CustomUser(int score, String username, String email, String password, boolean isAccountNonExistent, boolean isAccountNonLocked, boolean isCredentialsNonExpired, boolean isEnabled, Set<UserRole> roles) {
         this.score = score;
         this.username = username;
         this.email = email;
@@ -40,6 +39,7 @@ public class CustomUser {
         this.isEnabled = isEnabled;
         this.roles = roles;
     }
+
 
     public String getUsername() {
         return username;
