@@ -1,5 +1,6 @@
 package se.sti.card_school_security.security.jwt;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
@@ -13,6 +14,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 import se.sti.card_school_security.model.CustomUser;
 import se.sti.card_school_security.model.CustomUserDetails;
 import se.sti.card_school_security.model.authority.UserRole;
@@ -29,21 +32,21 @@ public class JwtUtils {
 
     private final SecretKey key;
     private final int jwtExpirationInMs = (int) TimeUnit.MINUTES.toMillis(10);
+    private final JwtParser parser;
+
 
     public JwtUtils(@Value("${app.security-key}") String base64EncodedSecretKey) {
         byte[] keyBytes = Base64.getDecoder().decode(base64EncodedSecretKey);
         key = Keys.hmacShaKeyFor(keyBytes);
+        parser = Jwts.parserBuilder().setSigningKey(key).build();
     }
 
-    public Claims parseToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-
-        return claims;
+    public Mono<Claims> parseToken(String token) {
+        return Mono.fromCallable(() ->
+                parser.parseClaimsJws(token).getBody()
+        ).subscribeOn(Schedulers.boundedElastic());
     }
+
 
     public String generateJwtToken(CustomUserDetails customUserDetails) {
         log.debug("Generate JWT token for {} with value: {}", customUserDetails.getUsername(),customUserDetails.getAuthorities());
@@ -65,6 +68,26 @@ public class JwtUtils {
         return token;
     }
 
+
+    public String extractJwtFromCookie(ServerHttpRequest request){
+        if (request.getCookies() == null) return null;
+
+        // "authToken" är namnet på cookie:n
+        HttpCookie cookie = request.getCookies().getFirst("authToken");
+        if (cookie != null) {
+            return cookie.getValue();
+        }
+        return null;
+    }
+
+    public String extractJwtFromRequest(ServerHttpRequest request) {
+        String header = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+        if (header != null && header.startsWith("Bearer ")) {
+            return header.substring(7);
+        }
+        return null;
+    }
+/*          SPARADE OANVÄNDA METODER SOM HAR RECOMMENDERS ATT SPARAS FÖR FRAMTIDA IMPLEMENTATION
     public String getUsernameFromJwtToken(String token) {
         try {
             Claims claims = Jwts.parser()
@@ -145,23 +168,5 @@ public class JwtUtils {
         return false;
     }
 
-    public String extractJwtFromCookie(ServerHttpRequest request){
-        if (request.getCookies() == null) return null;
-
-        // "authToken" är namnet på cookie:n
-        HttpCookie cookie = request.getCookies().getFirst("authToken");
-        if (cookie != null) {
-            return cookie.getValue();
-        }
-        return null;
-    }
-
-    public String extractJwtFromRequest(ServerHttpRequest request) {
-        String header = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
-        if (header != null && header.startsWith("Bearer ")) {
-            return header.substring(7);
-        }
-        return null;
-    }
-
+ */
 }
