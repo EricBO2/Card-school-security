@@ -13,6 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -48,24 +49,24 @@ public class JwtUtils {
     }
 
 
-    public String generateJwtToken(CustomUserDetails customUserDetails) {
-        log.debug("Generate JWT token for {} with value: {}", customUserDetails.getUsername(),customUserDetails.getAuthorities());
-        System.out.println("debug JWTToken: " + customUserDetails.getUsername());
+    public Mono<String> generateJwtToken(UserDetails UserDetails) {
+        log.debug("Generate JWT token for {} with value: {}", UserDetails.getUsername(),UserDetails.getAuthorities());
+        System.out.println("debug JWTToken: " + UserDetails.getUsername());
 
 
-        List<String> roles = customUserDetails.getAuthorities().stream()
+        List<String> roles = UserDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .toList();
 
         String token = Jwts.builder()
-                .setSubject(customUserDetails.getUsername()) // istället för claim("sub", ...)
+                .setSubject(UserDetails.getUsername()) // istället för claim("sub", ...)
                 .claim("authorities", roles)
                 .setIssuedAt(new Date()) // här använder vi setIssuedAt istället
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationInMs))
                 .signWith(key) // key är typ SecretKey
                 .compact();
-        log.debug("JWT generation successfully for user: {}", customUserDetails.getUsername());
-        return token;
+        log.debug("JWT generation successfully for user: {}", UserDetails.getUsername());
+        return Mono.just(token);
     }
 
 
@@ -87,6 +88,7 @@ public class JwtUtils {
         }
         return null;
     }
+
 /*          SPARADE OANVÄNDA METODER SOM HAR RECOMMENDERS ATT SPARAS FÖR FRAMTIDA IMPLEMENTATION
     public String getUsernameFromJwtToken(String token) {
         try {
