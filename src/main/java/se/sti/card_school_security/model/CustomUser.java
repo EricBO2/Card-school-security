@@ -41,6 +41,8 @@ public class CustomUser {
     }
 
 
+
+
     public String getUsername() {
         return username;
     }
@@ -116,4 +118,35 @@ public class CustomUser {
     public void setRoles(Set<UserRole> roles) {
         this.roles = roles;
     }
+
+    public static CustomUser create(
+            int score,
+            String username,
+            String email,
+            String password,
+            Set<UserRole> roles
+    ) {
+        if (email == null || email.isBlank()) {
+            throw new IllegalArgumentException("Email is required");
+        }
+        if (roles == null || roles.isEmpty()) {
+            throw new IllegalArgumentException("User must have roles");
+        }
+
+        CustomUser user = new CustomUser();
+        user.id = UUID.randomUUID();
+        user.score = score;
+        user.username = username;
+        user.email = email;
+        user.password = password;
+        user.roles = roles;
+
+        user.isAccountNonExistent = true;
+        user.isAccountNonLocked = true;
+        user.isCredentialsNonExpired = true;
+        user.isEnabled = true;
+
+        return user;
+    }
 }
+
