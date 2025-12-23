@@ -1,7 +1,6 @@
 package se.sti.card_school_security.model.mapper;
 
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Mono;
 import se.sti.card_school_security.model.CustomUser;
 import se.sti.card_school_security.model.authority.UserRole;
 import se.sti.card_school_security.model.dto.CustomUserRegisterDTO;

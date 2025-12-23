@@ -1,7 +1,6 @@
 package se.sti.card_school_security.model.dto;
 
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Value;
 import se.sti.card_school_security.security.rules.EmailRules;
 import se.sti.card_school_security.security.rules.PasswordRules;
 import se.sti.card_school_security.security.rules.UsernameRules;
