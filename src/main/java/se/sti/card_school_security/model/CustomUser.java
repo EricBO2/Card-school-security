@@ -3,13 +3,19 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 import se.sti.card_school_security.model.authority.UserRole;
 
+import org.springframework.data.annotation.Transient;
+import se.sti.card_school_security.model.dto.CustomUserRegisterDTO;
+import se.sti.card_school_security.security.rules.EmailRules;
+import se.sti.card_school_security.security.rules.PasswordRules;
+import se.sti.card_school_security.security.rules.UsernameRules;
+
 import java.util.Set;
 import java.util.UUID;
 
-@Table("user")
+@Table("app_user")
 public class CustomUser {
     @Id
-    private UUID id = UUID.randomUUID();
+    private UUID id;
 
     private int score;
 
@@ -22,7 +28,8 @@ public class CustomUser {
     private boolean isCredentialsNonExpired;
     private boolean isEnabled;
 
-    private Set<UserRole> roles;
+    @Transient
+    private Set<UserRole> roles = Set.of();
 
     public CustomUser() {
     }
@@ -120,13 +127,10 @@ public class CustomUser {
     }
 
     public static CustomUser create(
-            int score,
-            String username,
-            String email,
-            String password,
+            CustomUserRegisterDTO dto,
             Set<UserRole> roles
     ) {
-        if (email == null || email.isBlank()) {
+        if (dto.getEmail() == null || dto.getEmail().isBlank()) {
             throw new IllegalArgumentException("Email is required");
         }
         if (roles == null || roles.isEmpty()) {
@@ -134,11 +138,10 @@ public class CustomUser {
         }
 
         CustomUser user = new CustomUser();
-        user.id = UUID.randomUUID();
-        user.score = score;
-        user.username = username;
-        user.email = email;
-        user.password = password;
+        user.score = 100;
+        user.username = dto.getUsername();
+        user.email = dto.getEmail();
+        user.password = dto.getPassword();
         user.roles = roles;
 
         user.isAccountNonExistent = true;

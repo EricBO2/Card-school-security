@@ -2,7 +2,7 @@ package se.sti.card_school_security.model.authority;
 
 public enum UserRoleName {
 
-    GUST("ROLE_GUST"),
+    GUEST("ROLE_GUEST"),
     PLAYER("ROLE_PLAYER"),
     ADMIN("ROLE_ADMIN");
 
