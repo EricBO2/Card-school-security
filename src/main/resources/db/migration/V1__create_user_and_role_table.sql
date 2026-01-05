@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 CREATE TABLE app_user
 (
     id                         UUID PRIMARY KEY      DEFAULT gen_random_uuid(),
@@ -10,7 +12,7 @@ CREATE TABLE app_user
     is_account_non_locked      BOOLEAN      NOT NULL DEFAULT TRUE,
     is_credentials_non_expired BOOLEAN      NOT NULL DEFAULT TRUE,
     is_enabled                 BOOLEAN      NOT NULL DEFAULT TRUE
-)
+);
 
 CREATE TABLE user_roles
 (

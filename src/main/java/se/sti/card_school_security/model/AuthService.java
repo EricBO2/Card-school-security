@@ -36,6 +36,7 @@ public class AuthService {
 
     public Mono<String> register(CustomUserRegisterDTO dto) {
         return customUserService.register(dto)
+                .map(CustomUserDetails::new)
                 .flatMap(jwtUtils::generateJwtToken);
     }
 }

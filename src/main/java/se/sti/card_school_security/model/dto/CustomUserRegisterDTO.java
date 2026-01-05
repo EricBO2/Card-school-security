@@ -13,10 +13,10 @@ public class CustomUserRegisterDTO {
     @Valid
     private UsernameRules username;
 
-    public CustomUserRegisterDTO(UsernameRules username, PasswordRules password, EmailRules email) {
-        this.username = username;
-        this.password = password;
-        this.email = email;
+    public CustomUserRegisterDTO(String username, String password, String email) {
+        this.username = new UsernameRules(username);
+        this.password = new PasswordRules(password);
+        this.email = new EmailRules(email);
     }
 
     public CustomUserRegisterDTO() {
