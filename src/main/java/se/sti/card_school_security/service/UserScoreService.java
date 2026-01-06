@@ -6,7 +6,6 @@ import se.sti.card_school_security.model.dto.PlayerScoreDTO;
 
 
 @Service
-
 public class UserScoreService {
 
     // Här skulle du ha repository för DB (t.ex. JPA)

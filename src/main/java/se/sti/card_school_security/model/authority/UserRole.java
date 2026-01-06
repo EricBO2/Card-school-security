@@ -11,14 +11,16 @@ import static se.sti.card_school_security.model.authority.UserPermission.*;
 public enum UserRole {
 
     //any has CREATE_PLAYER
-    GUST(
-            UserRoleName.GUST.getRoleName(),
+    GUEST(
+            UserRoleName.GUEST.getRoleName(),
             Set.of(
+                    CREATE_PLAYER,
                     PLAY
             )),
     PLAYER(
             UserRoleName.PLAYER.getRoleName(),
             Set.of(
+                    CREATE_PLAYER,
                     DELETE_SELF,
                     PLAY
             )),
