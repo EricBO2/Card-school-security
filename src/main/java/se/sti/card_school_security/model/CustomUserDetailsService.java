@@ -7,28 +7,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
+
 @Service
 public class CustomUserDetailsService implements ReactiveUserDetailsService {
 
-    private final CustomUserRepository customUserRepository;
+    private final CustomUserService customUserService;
 
-    public CustomUserDetailsService(CustomUserRepository customUserRepository) {
-        this.customUserRepository = customUserRepository;
+    public CustomUserDetailsService(CustomUserService customUserService) {
+        this.customUserService = customUserService;
     }
 
     @Override
     public Mono<UserDetails> findByUsername(String email) {
 
-        return customUserRepository.findUserByEmail(email)
-
-                .map(dto -> (UserDetails) new CustomUserDetails(dto))
-
-                .onErrorMap(e ->
-                        new ResponseStatusException(
-                                HttpStatus.INTERNAL_SERVER_ERROR,
-                                "User registration failed",
-                                e
-                        )
-                );
+        return customUserService.findByEmail(email)
+                .map(CustomUserDetails::new);
     }
 }

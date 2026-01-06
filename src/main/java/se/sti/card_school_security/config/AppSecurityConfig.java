@@ -7,11 +7,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
 import se.sti.card_school_security.model.CustomUserDetailsService;
 import se.sti.card_school_security.security.jwt.JwtAuthenticationFilter;
 
@@ -36,6 +38,7 @@ public class AppSecurityConfig {
         http
                 .csrf(csrfConfigurer -> csrfConfigurer.disable())
                 .authorizeExchange(exchanges -> exchanges
+                        .pathMatchers("/auth/login", "/auth/register").permitAll()
                         .pathMatchers( "/auth/**", "/").permitAll()
                         .pathMatchers("/api/admin/**").hasRole("ADMIN")
                         .pathMatchers("/api/get-all").hasAnyRole("EMPLOYEE", "ADMIN")
