@@ -1,5 +1,8 @@
 package se.sti.card_school_security.model;
 
+import io.jsonwebtoken.Claims;
+import org.springframework.http.HttpCookie;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -39,4 +42,5 @@ public class AuthService {
                 .map(CustomUserDetails::new)
                 .flatMap(jwtUtils::generateJwtToken);
     }
+
 }

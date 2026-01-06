@@ -39,9 +39,8 @@ public class AppSecurityConfig {
                 .csrf(csrfConfigurer -> csrfConfigurer.disable())
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers("/auth/login", "/auth/register").permitAll()
-                        .pathMatchers( "/auth/**", "/").permitAll()
-                        .pathMatchers("/api/admin/**").hasRole("ADMIN")
-                        .pathMatchers("/api/get-all").hasAnyRole("EMPLOYEE", "ADMIN")
+                        .pathMatchers("/auth/admin-only").hasRole("ADMIN")
+                        .pathMatchers("/api/player-only").hasAnyRole("PLAYER", "ADMIN")
                         .anyExchange().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, SecurityWebFiltersOrder.AUTHENTICATION)
