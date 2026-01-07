@@ -49,7 +49,7 @@ public class AppSecurityConfig {
                         .pathMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .pathMatchers("/auth/login", "/auth/register").permitAll()
                         .pathMatchers("/auth/admin-only").hasRole("ADMIN")
-                        .pathMatchers("/auth/player-only","/auth/logout","/auth/user/delete").hasAnyRole("PLAYER", "ADMIN")
+                        .pathMatchers("/auth/player-only","/auth/logout","/auth/user/delete","/auth/me").hasAnyRole("PLAYER", "ADMIN")
                         .anyExchange().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, SecurityWebFiltersOrder.AUTHENTICATION)

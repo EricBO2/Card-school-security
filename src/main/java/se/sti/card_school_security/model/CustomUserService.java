@@ -28,7 +28,7 @@ public class CustomUserService {
     }
 
 
-    Mono<CustomUser> findByEmail(String email) {
+    public Mono<CustomUser> findByEmail(String email) {
         return customUserRepository.findUserByEmail(email)
                 .switchIfEmpty(Mono.error(
                         new UsernameNotFoundException("User not found: " + email)
