@@ -1,5 +1,8 @@
 package se.sti.card_school_security.model;
 
+import io.jsonwebtoken.Claims;
+import org.springframework.http.HttpCookie;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -38,5 +41,23 @@ public class AuthService {
         return customUserService.register(dto)
                 .map(CustomUserDetails::new)
                 .flatMap(jwtUtils::generateJwtToken);
+    }
+
+    public Mono<Boolean> verifyPassword(String email, String rawPassword) {
+        return userDetailsService.findByUsername(email)
+                .map(user -> passwordEncoder.matches(rawPassword, user.getPassword()))
+                .defaultIfEmpty(false);
+    }
+
+    public Mono<Void> deleteSelf(String email, String rawPassword) {
+        return verifyPassword(email, rawPassword)
+                .flatMap(valid -> {
+                    if (!valid) {
+                        return Mono.error(
+                                new BadCredentialsException("Invalid password")
+                        );
+                    }
+                    return customUserService.deleteUser(email);
+                });
     }
 }

@@ -33,7 +33,6 @@ public class JwtAuthenticationFilter implements WebFilter {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-
         String token = jwtUtils.extractJwtFromRequest(exchange.getRequest());
         if (token == null) {
             token = jwtUtils.extractJwtFromCookie(exchange.getRequest());
@@ -44,19 +43,21 @@ public class JwtAuthenticationFilter implements WebFilter {
         }
 
         return jwtUtils.parseToken(token)
-                .map(claims -> {
+                .flatMap(claims -> {
                     String email = claims.getSubject();
-
                     Object rawAuthorities = claims.get("authorities");
-
-                    List<GrantedAuthority> authorities = ((List<?>) rawAuthorities).stream()
+                    List<SimpleGrantedAuthority> authorities = ((List<?>) rawAuthorities).stream()
                             .map(Object::toString)
-                            .<GrantedAuthority>map(SimpleGrantedAuthority::new)
+                            .map(SimpleGrantedAuthority::new)
                             .toList();
 
-                    return new UsernamePasswordAuthenticationToken(
-                            email, null, authorities
-                    );
+                    // Hämta CustomUserDetails från service
+                    return customUserDetailsService.findByUsername(email)
+                            .map(userDetails -> {
+                                UsernamePasswordAuthenticationToken auth =
+                                        new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
+                                return auth;
+                            });
                 })
                 .flatMap(auth ->
                         chain.filter(exchange)
@@ -64,4 +65,5 @@ public class JwtAuthenticationFilter implements WebFilter {
                 )
                 .onErrorResume(ex -> chain.filter(exchange));
     }
+
 }
