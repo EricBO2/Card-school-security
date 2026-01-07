@@ -64,4 +64,10 @@ public class CustomUserService {
                                 .then(Mono.just(savedUser))
                 );
     }
+
+
+    public Mono<Void> deleteUser(String username) {
+        return customUserRepository.findUserByEmail(username)
+                .flatMap(user -> customUserRepository.delete(user));
+    }
 }

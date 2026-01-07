@@ -6,12 +6,15 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 import se.sti.card_school_security.model.AuthService;
+import se.sti.card_school_security.model.CustomUserDetails;
 import se.sti.card_school_security.model.dto.AuthTokenResponseDTO;
 import se.sti.card_school_security.model.dto.CustomUserLoginDTO;
 import se.sti.card_school_security.model.dto.CustomUserRegisterDTO;
+import se.sti.card_school_security.model.dto.PasswordDTO;
 
 import java.time.Duration;
 
@@ -77,6 +80,18 @@ public class AuthenticationRestController {
 
                 });
     }
+
+    @PostMapping("/user/delete")
+    public Mono<ResponseEntity<Void>> deleteSelf(
+            @AuthenticationPrincipal CustomUserDetails user, //hämtar cutomUserDetails från token
+            @RequestBody PasswordDTO dto,
+            ServerHttpResponse response
+    ) {
+        return authService
+                .deleteSelf(user.getUsername(), dto.getPassword())
+                .thenReturn(ResponseEntity.noContent().build());
+    }
+
 
     @GetMapping("/player-only")
     public Mono<ResponseEntity<String>> playerOnly() {

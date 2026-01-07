@@ -43,4 +43,21 @@ public class AuthService {
                 .flatMap(jwtUtils::generateJwtToken);
     }
 
+    public Mono<Boolean> verifyPassword(String email, String rawPassword) {
+        return userDetailsService.findByUsername(email)
+                .map(user -> passwordEncoder.matches(rawPassword, user.getPassword()))
+                .defaultIfEmpty(false);
+    }
+
+    public Mono<Void> deleteSelf(String email, String rawPassword) {
+        return verifyPassword(email, rawPassword)
+                .flatMap(valid -> {
+                    if (!valid) {
+                        return Mono.error(
+                                new BadCredentialsException("Invalid password")
+                        );
+                    }
+                    return customUserService.deleteUser(email);
+                });
+    }
 }

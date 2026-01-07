@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager;
 import org.springframework.security.config.Customizer;
@@ -36,11 +37,19 @@ public class AppSecurityConfig {
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http){
 
         http
+                .cors(Customizer.withDefaults())
                 .csrf(csrfConfigurer -> csrfConfigurer.disable())
+                .exceptionHandling(exceptionHandling ->
+                        exceptionHandling.authenticationEntryPoint((exchange, ex) -> {
+                            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+                            return exchange.getResponse().setComplete();
+                        })
+                )
                 .authorizeExchange(exchanges -> exchanges
+                        .pathMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .pathMatchers("/auth/login", "/auth/register").permitAll()
                         .pathMatchers("/auth/admin-only").hasRole("ADMIN")
-                        .pathMatchers("/api/player-only").hasAnyRole("PLAYER", "ADMIN")
+                        .pathMatchers("/auth/player-only","/auth/logout","/auth/user/delete").hasAnyRole("PLAYER", "ADMIN")
                         .anyExchange().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, SecurityWebFiltersOrder.AUTHENTICATION)

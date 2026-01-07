@@ -66,7 +66,6 @@ public class JwtUtils {
     public String extractJwtFromCookie(ServerHttpRequest request){
         if (request.getCookies() == null) return null;
 
-        // "token" är namnet på cookie:n
         HttpCookie cookie = request.getCookies().getFirst("token");
         if (cookie != null) {
             return cookie.getValue();
